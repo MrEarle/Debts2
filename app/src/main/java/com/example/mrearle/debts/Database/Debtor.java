@@ -11,6 +11,7 @@ import java.util.List;
 
 @Entity(tableName = "debtor", indices = {@Index(value = {"name"}, unique = true)})
 public class Debtor {
+    // Debtor relational table
     @PrimaryKey(autoGenerate = true)
     public int id;
     public String name;

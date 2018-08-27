@@ -9,6 +9,7 @@ import android.util.Log;
 
 @Database(entities = {Debtor.class, Debt.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
+    /* Standard App Database from Android Room */
 
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();
     private static final Object LOCK = new Object();

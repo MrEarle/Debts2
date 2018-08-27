@@ -15,6 +15,7 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
                                   onUpdate = CASCADE),
         indices = @Index("debtor_id"))
 public class Debt {
+    // Debt relational table
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "debt_id")
     public int debtId;

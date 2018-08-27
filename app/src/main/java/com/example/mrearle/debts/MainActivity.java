@@ -3,6 +3,7 @@ package com.example.mrearle.debts;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -18,11 +19,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.example.mrearle.debts.Database.AppDatabase;
+import com.example.mrearle.debts.Database.Debtor;
 import com.example.mrearle.debts.Database.DebtorLedger;
 
 import java.util.List;
+import java.util.Locale;
 
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
@@ -31,9 +35,11 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
 
     // Constant for logging
     private static final String TAG = MainActivity.class.getSimpleName();
-    // Member variables for the adapter and RecyclerView
-    private RecyclerView mRecyclerView;
     private MainAdapter mAdapter;
+    private TextView mGrandTotalView;
+
+    private static final int POSITIVE_COLOR = Color.rgb(0,94,0);
+    private static final int NEGATIVE_COLOR = Color.RED;
 
     private AppDatabase mDb;
 
@@ -49,7 +55,8 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
         }
 
         // Set the RecyclerView to its corresponding view
-        mRecyclerView = findViewById(R.id.debtors_recycle_view);
+        RecyclerView mRecyclerView = findViewById(R.id.debtors_recycle_view);
+        mGrandTotalView = findViewById(R.id.tv_grandTotal);
 
         // Set the layout for the RecyclerView to be a linear layout, which measures and
         // positions items within a RecyclerView into a linear list
@@ -69,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
          and uses callbacks to signal when a user is performing these actions.
          */
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            // Todo: Add Confirmation on delete
+            // Todo: Add checked
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
@@ -109,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
         retrieveDebtors();
 
 
+
         Snackbar.make(findViewById(R.id.coordinator_main), "Tap to edit, swipe to delete", Snackbar.LENGTH_LONG).show();
     }
 
@@ -120,8 +130,24 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
             public void onChanged(@Nullable List<DebtorLedger> debtorEntries) {
                 Log.d(TAG, "Receiving database update from LiveData");
                 mAdapter.setDebtors(debtorEntries);
+                // Todo: Make more efficient
+                int grandTotal = 0;
+                for(DebtorLedger debtor: debtorEntries){
+                    grandTotal += debtor.getTotal();
+                }
+                updateGrandTotal(grandTotal);
             }
         });
+    }
+
+    private void updateGrandTotal(int total) {
+        mGrandTotalView.setText(String.format(Locale.US, "Total: $%d", total));
+
+        if(total >= 0){
+            mGrandTotalView.setTextColor(POSITIVE_COLOR);
+        } else {
+            mGrandTotalView.setTextColor(NEGATIVE_COLOR);
+        }
     }
 
     @Override

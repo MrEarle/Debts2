@@ -7,6 +7,8 @@ import android.arch.persistence.room.Transaction;
 import java.util.List;
 
 public class DebtorLedger {
+    // Debtor Ledger relational table
+
     @Embedded
     public Debtor debtor;
 

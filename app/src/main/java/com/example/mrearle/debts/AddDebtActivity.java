@@ -134,7 +134,7 @@ public class AddDebtActivity extends AppCompatActivity {
     public void onSaveButtonClicked() {
         Integer amount = Integer.parseInt(mAmount.getText().toString());
         String description = mDescription.getText().toString();
-        String date = String.format(Locale.US, "%d/%d/%d",
+        String date = String.format(Locale.US, "%d/%02d/%02d",
                 mDate.getYear(), mDate.getMonth(), mDate.getDayOfMonth());
 
         Log.d(TAG, mDebtorId.toString());
