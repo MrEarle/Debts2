@@ -2,6 +2,8 @@ package com.example.mrearle.debts;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -11,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -95,15 +98,36 @@ public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.I
             // Called when a user swipes left or right on a ViewHolder
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                final int position = viewHolder.getAdapterPosition();
+                List<Debt> debts = mAdapter.getDebts();
+                Context context = DebtorActivity.this;
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                final Debt debt = debts.get(position);
+                builder.setTitle("Do you really want to delete this debt?");
                 // Here is where you'll implement swipe to delete
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
-                    public void run() {
-                        int position = viewHolder.getAdapterPosition();
-                        List<Debt> debts = mAdapter.getDebts();
-                        mDb.getDao().deleteDebt(debts.get(position));
+                    public void onClick(DialogInterface dialog, int which) {
+                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                mDb.getDao().deleteDebt(debt);
+                            }
+                        });
                     }
                 });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mAdapter.notifyItemChanged(position);
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+                // Here is where you'll implement swipe to delete
+
             }
         }).attachToRecyclerView(mRecyclerView);
 

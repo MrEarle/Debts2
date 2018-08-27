@@ -2,6 +2,8 @@ package com.example.mrearle.debts;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -86,15 +89,34 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
             // Called when a user swipes left or right on a ViewHolder
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                final int position = viewHolder.getAdapterPosition();
+                final List<DebtorLedger> debtors = mAdapter.getDebtors();
+                Context context = MainActivity.this;
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                final Debtor debtor = debtors.get(position).debtor;
+                builder.setTitle(String.format(Locale.US, "Do you really want to delete %s", debtor.name));
                 // Here is where you'll implement swipe to delete
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
-                    public void run() {
-                        int position = viewHolder.getAdapterPosition();
-                        List<DebtorLedger> debtors = mAdapter.getDebtors();
-                        mDb.getDao().deleteDebtor(debtors.get(position).debtor);
+                    public void onClick(DialogInterface dialog, int which) {
+                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                mDb.getDao().deleteDebtor(debtor);
+                            }
+                        });
                     }
                 });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mAdapter.notifyItemChanged(position);
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
             }
         }).attachToRecyclerView(mRecyclerView);
 
