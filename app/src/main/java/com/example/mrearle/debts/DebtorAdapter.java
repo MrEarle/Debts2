@@ -2,6 +2,7 @@ package com.example.mrearle.debts;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -79,6 +80,14 @@ public class DebtorAdapter extends RecyclerView.Adapter<DebtorAdapter.DebtorAdap
         if (amount >= 0){
             holder.debtAmountView.setTextColor(POSITIVE_COLOR);
         } else holder.debtAmountView.setTextColor(NEGATIVE_COLOR);
+
+        Log.d(TAG, String.format("%s checked is %d", debt.description, debt.getChecked()));
+
+        if (debt.isChecked()) {
+            holder.debtAmountView.setPaintFlags(holder.debtAmountView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            holder.debtAmountView.setPaintFlags(holder.debtAmountView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        }
     }
 
     /**

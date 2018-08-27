@@ -41,6 +41,7 @@ public class AddDebtActivity extends AppCompatActivity {
 
     private Integer mDebtorId;
     private int mDebtId = DEFAULT_DEBT_ID;
+    private int mDebtChecked = 0;
     // Fields for views
     EditText mAmount;
     EditText mDescription;
@@ -87,6 +88,7 @@ public class AddDebtActivity extends AppCompatActivity {
                     public void onChanged(@Nullable Debt debtEntry) {
                         // COMPLETED (5) Remove the observer as we do not need it any more
                         debt.removeObserver(this);
+                        mDebtChecked = debtEntry.getChecked();
                         Log.d(TAG, "Receiving database update from LiveData");
                         populateUI(debtEntry);
                     }
@@ -109,7 +111,7 @@ public class AddDebtActivity extends AppCompatActivity {
         mDescription.setText(debt.description);
         String[] parts = debt.date.split("/");
         mDate.init(Integer.parseInt(parts[0]),
-                Integer.parseInt(parts[1]),
+                Integer.parseInt(parts[1]) - 1,
                 Integer.parseInt(parts[2]), null);
     }
 
@@ -135,7 +137,7 @@ public class AddDebtActivity extends AppCompatActivity {
         Integer amount = Integer.parseInt(mAmount.getText().toString());
         String description = mDescription.getText().toString();
         String date = String.format(Locale.US, "%d/%02d/%02d",
-                mDate.getYear(), mDate.getMonth(), mDate.getDayOfMonth());
+                mDate.getYear(), mDate.getMonth() + 1, mDate.getDayOfMonth());
 
         Log.d(TAG, mDebtorId.toString());
 
@@ -149,6 +151,7 @@ public class AddDebtActivity extends AppCompatActivity {
                 } else {
                     //update task
                     debt.setId(mDebtId);
+                    debt.setChecked(mDebtChecked);
                     mDb.getDao().updateDebt(debt);
                 }
                 finish();

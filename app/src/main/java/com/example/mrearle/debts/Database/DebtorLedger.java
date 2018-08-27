@@ -18,7 +18,9 @@ public class DebtorLedger {
     public int getTotal() {
         Integer total = 0;
         for (Debt debt : debts) {
-            total += debt.amount;
+            if (!debt.isChecked()) {
+                total += debt.amount;
+            }
         }
         return total;
     }

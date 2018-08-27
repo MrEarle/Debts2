@@ -15,7 +15,7 @@
 
     <!-- EditText for name description input -->
     <EditText
-        android:inputType="text"
+        android:inputType="textCapSentences"
         android:id="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

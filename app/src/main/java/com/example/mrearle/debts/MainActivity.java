@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
          and uses callbacks to signal when a user is performing these actions.
          */
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            // Todo: Add Confirmation on delete
             // Todo: Add checked
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {

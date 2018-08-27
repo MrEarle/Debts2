@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -37,7 +38,7 @@ import java.util.Locale;
 
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
-public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.ItemClickListener{
+public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.ItemClickListener {
 
     // Constant for logging
     private static final String TAG = DebtorActivity.class.getSimpleName();
@@ -52,7 +53,7 @@ public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.I
 
     public static final String EXTRA_DEBTOR_ID = "extra_debtor_id";
     public static final String EXTRA_DEBTOR_NAME = "extra_debtor_name";
-    private static final int POSITIVE_COLOR = Color.rgb(0,94,0);
+    private static final int POSITIVE_COLOR = Color.rgb(0, 94, 0);
     private static final int NEGATIVE_COLOR = Color.RED;
 
     private TextView mDebtorView;
@@ -79,7 +80,7 @@ public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.I
         mRecyclerView.addItemDecoration(decoration);
 
         android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-        if(toolbar != null) {
+        if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -89,7 +90,7 @@ public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.I
          An ItemTouchHelper enables touch behavior (like swipe and move) on each ViewHolder,
          and uses callbacks to signal when a user is performing these actions.
          */
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
@@ -100,33 +101,48 @@ public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.I
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 final int position = viewHolder.getAdapterPosition();
                 List<Debt> debts = mAdapter.getDebts();
-                Context context = DebtorActivity.this;
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 final Debt debt = debts.get(position);
-                builder.setTitle("Do you really want to delete this debt?");
-                // Here is where you'll implement swipe to delete
+                if (swipeDir == ItemTouchHelper.LEFT) {
+                    Context context = DebtorActivity.this;
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Do you really want to delete this debt?");
+                    // Here is where you'll implement swipe to delete
 
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                mDb.getDao().deleteDebt(debt);
-                            }
-                        });
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mAdapter.notifyItemChanged(position);
-                        dialog.cancel();
-                    }
-                });
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mDb.getDao().deleteDebt(debt);
+                                }
+                            });
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mAdapter.notifyItemChanged(position);
+                            dialog.cancel();
+                        }
+                    });
 
-                builder.show();
-                // Here is where you'll implement swipe to delete
+                    builder.show();
+                } else {
+                    if (debt.isChecked()) {
+                        debt.uncheck();
+                    } else {
+                        debt.check();
+                    }
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            //update task
+                            mDb.getDao().updateCheckDebt(debt);
+                        }
+                    });
+                    mAdapter.notifyItemChanged(position);
+                }
 
             }
         }).attachToRecyclerView(mRecyclerView);
@@ -184,7 +200,7 @@ public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.I
     public void populateUI(DebtorLedger debtorLedger) {
         int total = debtorLedger.getTotal();
         mDebtorView.setText(String.format(Locale.US, "Total: $ %d", total));
-        if (total >= 0){
+        if (total >= 0) {
             mDebtorView.setTextColor(POSITIVE_COLOR);
         } else mDebtorView.setTextColor(NEGATIVE_COLOR);
     }
@@ -210,6 +226,7 @@ public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.I
         intent.putExtra(DebtorActivity.EXTRA_DEBTOR_NAME, name);
         startActivity(intent);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_debtor, menu);
@@ -218,7 +235,7 @@ public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.I
         return true;
     }
 
-    private Intent createShareDeudaIntent(){
+    private Intent createShareDeudaIntent() {
         return ShareCompat.IntentBuilder.from(this)
                 .setType("text/plain")
                 .setText(getShareString())
@@ -227,16 +244,18 @@ public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.I
     }
 
     private void generateDebtorString(DebtorLedger debtorLedger) {
-        if (debtorLedger == null){
+        if (debtorLedger == null) {
             return;
         }
         Log.d(TAG, "Generating Share String");
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(String.format(Locale.US, "Nombre: %s\nTotal: $%d\n\n Desglose:\n",
                 debtorLedger.getName(), debtorLedger.getTotal()));
-        for(Debt debt: debtorLedger.debts){
-            stringBuilder.append(String.format(Locale.US, "(%s) $%d -> %s\n", debt.date,
-                    debt.amount, debt.description));
+        for (Debt debt : debtorLedger.debts) {
+            if (!debt.isChecked()) {
+                stringBuilder.append(String.format(Locale.US, "(%s) $%d -> %s\n", debt.date,
+                        debt.amount, debt.description));
+            }
         }
         mShareString = stringBuilder.toString();
     }
@@ -249,8 +268,8 @@ public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.I
                 Log.d(TAG, "Receiving database update from LiveData");
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append(String.format(Locale.US, "Nombre: %s\nTotal: $%d\n\n Desglose:\n",
-                                        debtEntry.getName(), debtEntry.getTotal()));
-                for(Debt debt: debtEntry.debts){
+                        debtEntry.getName(), debtEntry.getTotal()));
+                for (Debt debt : debtEntry.debts) {
                     stringBuilder.append(String.format(Locale.US, "(%s) $%d -> %s\n", debt.date,
                             debt.amount, debt.description));
                 }
@@ -289,7 +308,7 @@ public class DebtorActivity extends AppCompatActivity implements DebtorAdapter.I
             startActivity(intent);
             return true;
         }
-        if (id == R.id.action_share){
+        if (id == R.id.action_share) {
             startActivity(createShareDeudaIntent());
             return true;
         }

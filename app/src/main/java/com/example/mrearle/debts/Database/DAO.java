@@ -63,10 +63,14 @@ public interface DAO {
     void deleteDebt(Debt debt);
 
     // Select All debts from a debtor, ordered by id, as Live Data
-    @Query("SELECT * FROM debt WHERE debtor_id = :id ORDER BY date")
+    @Query("SELECT * FROM debt WHERE debtor_id = :id ORDER BY checked ASC, date DESC")
     LiveData<List<Debt>> loadDebtsFromId(int id);
 
     // Get debt by id as Live Data
     @Query("SELECT * FROM debt WHERE debt_id = :id")
     LiveData<Debt> getDebtById(int id);
+
+    // Check a debt
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    void updateCheckDebt(Debt debt);
 }

@@ -24,6 +24,7 @@ public class Debt {
     public Integer amount;
     public String date;
     public String description;
+    private int checked;
 
     @Ignore
     public Debt(Integer amount, String date, String description, int debtorId){
@@ -31,14 +32,16 @@ public class Debt {
         this.date = date;
         this.description = description;
         this.debtorId = debtorId;
+        this.checked = 0;
     }
 
-    public Debt(Integer amount, String date, String description, int debtorId, int debtId){
+    public Debt(Integer amount, String date, String description, int debtorId, int debtId, int checked){
         this.amount = amount;
         this.date = date;
         this.description = description;
         this.debtorId = debtorId;
         this.debtId = debtId;
+        this.checked = checked;
     }
 
     public int getId() {
@@ -47,5 +50,25 @@ public class Debt {
 
     public void setId(int debtId) {
         this.debtId = debtId;
+    }
+
+    public int getChecked(){
+        return checked;
+    }
+
+    public void setChecked(int checked){
+        this.checked = checked;
+    }
+
+    public void check(){
+        this.checked = 1;
+    }
+
+    public void uncheck(){
+        this.checked = 0;
+    }
+
+    public boolean isChecked(){
+        return this.checked == 1;
     }
 }
