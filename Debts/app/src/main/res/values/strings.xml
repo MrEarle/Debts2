@@ -1,0 +1,98 @@
+<resources>
+    <string name="app_name">Debts</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="main_activity_name">Debtors</string>
+    <string name="add_task_activity_name">Add a New Debtor</string>
+
+    <!-- Strings for AddTaskActivity -->
+    <!-- This etaskEntrytask has a unicode character for "..." = "&#8230;" -->
+    <string name="edit_debtor_name">Debtor Name</string>
+
+    <string name="add_button">Add</string>
+    <string name="update_button">Update</string>
+    <string name="add_debt_title">Create a New Debt</string>
+    <string name="add_debt_hint">If you owe him, just enter a negative number</string>
+    <string name="add_debt_description">Description</string>
+    <string name="edit_debt_amount">Amount</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_enable_bank">Include Bank Info</string>
+    <string name="pref_description_enable_bank">Include bank info when sharing a debt</string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="list_preference_entries">
+        <item>Entry 1</item>
+        <item>Entry 2</item>
+        <item>Entry 3</item>
+    </string-array>
+
+    <string-array name="list_preference_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="multi_select_list_preference_default_value" />
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+    <string name="pref_title_vibrate">Vibrate</string>
+    <string name="pref_title_name">Name</string>
+    <string name="pref_title_bank">Bank Name</string>
+    <string name="pref_title_rut">Rut</string>
+    <string name="pref_title_account_number">AccountNumber</string>
+    <string name="pref_title_account_type">Account Type</string>
+    <string name="pref_title_email">Email Address</string>
+    <string name="action_share">Share</string>
+    <string name="total_0">Total: $ 0</string>
+
+</resources>
