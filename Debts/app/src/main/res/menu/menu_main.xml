@@ -3,7 +3,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.mrearle.debts.MainActivity">
     <item
+        android:id="@+id/action_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="@string/search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
+
+    <item
+        android:id="@+id/action_sort_options"
+        android:icon="@drawable/ic_sort_white_24dp"
+        android:title="@string/sort"
+        app:showAsAction="ifRoom" >
+        <menu>
+            <item
+                android:id="@+id/action_sort_alphabetical"
+                android:icon="@drawable/ic_sort_by_alpha_white_24dp"
+                android:title="@string/alphabetical" />
+            <item
+                android:id="@+id/action_sort_amount"
+                android:icon="@drawable/ic_format_list_numbered_white_24dp"
+                android:title="@string/amount" />
+        </menu>
+
+    </item>
+
+    <item
         android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings_white_24dp"
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />

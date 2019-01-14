@@ -95,7 +95,7 @@ public class AddDebtActivity extends AppCompatActivity {
                 });
             }
         }
-
+        mAmount.requestFocus();
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {

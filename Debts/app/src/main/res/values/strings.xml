@@ -94,5 +94,9 @@
     <string name="pref_title_email">Email Address</string>
     <string name="action_share">Share</string>
     <string name="total_0">Total: $ 0</string>
+    <string name="search">Search</string>
+    <string name="sort">Sort</string>
+    <string name="alphabetical">Alphabetical</string>
+    <string name="amount">Amount</string>
 
 </resources>

@@ -18,6 +18,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
     private static final String TAG = MainActivity.class.getSimpleName();
     private MainAdapter mAdapter;
     private TextView mGrandTotalView;
+//    private SearchView mSearch;
 
     private static final int POSITIVE_COLOR = Color.rgb(0,94,0);
     private static final int NEGATIVE_COLOR = Color.RED;
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
         // Set the RecyclerView to its corresponding view
         RecyclerView mRecyclerView = findViewById(R.id.debtors_recycle_view);
         mGrandTotalView = findViewById(R.id.tv_grandTotal);
+//        mSearch = findViewById(R.id.debtor_search);
 
         // Set the layout for the RecyclerView to be a linear layout, which measures and
         // positions items within a RecyclerView into a linear list
@@ -71,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
 
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
         mRecyclerView.addItemDecoration(decoration);
-
 
         /*
          Add a touch helper to the RecyclerView to recognize when a user swipes to delete an item.
@@ -192,7 +194,57 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+
+        MenuItem mSearch = menu.findItem(R.id.action_search);
+
+        SearchView mSearchView = (SearchView) mSearch.getActionView();
+        mSearchView.setQueryHint("Search");
+
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mAdapter.filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mAdapter.filter(newText);
+                return true;
+            }
+        });
+
+        MenuItem mSortAlpha = menu.findItem(R.id.action_sort_alphabetical);
+        mSortAlpha.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Log.d(TAG, "Preparing to sort");
+                int currSort = mAdapter.currentSort;
+                if(currSort == MainAdapter.ALPHA_ASC || currSort == MainAdapter.ALPHA_DESC){
+                    mAdapter.sort(-currSort);
+                } else {
+                    mAdapter.sort(MainAdapter.ALPHA_ASC);
+                }
+                return false;
+            }
+        });
+
+        MenuItem mSortTotal = menu.findItem(R.id.action_sort_amount);
+        mSortTotal.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Log.d(TAG, "Preparing to sort");
+                int currSort = mAdapter.currentSort;
+                if(currSort == MainAdapter.TOTAL_ASC || currSort == MainAdapter.TOTAL_DESC){
+                    mAdapter.sort(-currSort);
+                } else {
+                    mAdapter.sort(MainAdapter.TOTAL_ASC);
+                }
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
